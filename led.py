@@ -26,7 +26,7 @@ def main_loop(args):
 		strip = init_led(args.numPixels)
 
 	# Timing Parameters
-	frequency = 0.4
+	frequency = 0.15
 	phase = 0
 	baseHue = 0
 
@@ -36,7 +36,7 @@ def main_loop(args):
 		leds = []
 		for x in range(args.numPixels):
 			# Evaluate for each LED
-			hue = 5*math.sin(x*frequency+phase)+baseHue
+			hue = 15*math.sin(x*frequency+phase)+baseHue
 			rgb = colorsys.hls_to_rgb(hue/360, 0.5, 1)
 			hex = '%02x%02x%02x' % (int(rgb[0]*255), int(rgb[1]*255), int(rgb[2]*255))
 			leds.append(hex)
@@ -54,12 +54,12 @@ def main_loop(args):
 		baseHue += 1
 		if baseHue == 360:
 			baseHue = 0
-		phase += 0.1
+		phase += 0.25
 		if phase == 100:
 			phase = 0
-		frequency += 0.05
-		if frequency == 0.7:
-			frequency = 0.4
+		frequency += 0.01
+		if frequency == 0.2:
+			frequency = 0.2
 
 		# Wait until next interval
 		time.sleep(args.interval)
