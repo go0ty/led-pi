@@ -1,1 +1,0 @@
-python led.py --interval 0.1 --leds 20 --console-debug

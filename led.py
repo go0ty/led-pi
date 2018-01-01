@@ -1,19 +1,32 @@
 import sys
 import argparse
-import colorsys
 import math
 import time
+import colorsys
+import random
+from dotstar import Adafruit_DotStar
 
 def parse_args(args):
 	# Getting command line arguments
 	parser = argparse.ArgumentParser(description="LED Strip Controller")
-	parser.add_argument("--leds", type=int, help="The number of LEDs in the strip")
+	parser.add_argument("--numPixels", type=int, help="The number of LEDs in the strip")
 	parser.add_argument("--interval", type=float, help="The interval time in milliseconds between each packet")
-	parser.add_argument("--console-debug", action="store_true", help="Output packets to console, ignore LED")
+	parser.add_argument("--detachedStrip", action="store_true", help="Output packets to console, ignore LED")
 	return parser.parse_args(args)
 
+def init_led(numPixels):
+	strip = Adafruit_DotStar(numPixels, 12000000)
+	strip.begin()
+	strip.setBrightness(64)
+	return strip
+
 def main_loop(args):
-	frequency = 0.5
+	# DotStar Interface
+	if not args.detachedStrip:
+		strip = init_led(args.numPixels)
+
+	# Timing Parameters
+	frequency = 0.4
 	phase = 0
 	baseHue = 0
 
@@ -21,28 +34,32 @@ def main_loop(args):
 	while True:
 		# Loop through each LED and assign a color
 		leds = []
-		for x in range(args.leds):
+		for x in range(args.numPixels):
 			# Evaluate for each LED
-			hue = math.sin(x*frequency+phase)+baseHue
-			leds.append(hue)
+			hue = 5*math.sin(x*frequency+phase)+baseHue
+			rgb = colorsys.hls_to_rgb(hue/360, 0.5, 1)
+			hex = '%02x%02x%02x' % (int(rgb[0]*255), int(rgb[1]*255), int(rgb[2]*255))
+			leds.append(hex)
 
 		# Update LED Colors
-		if (args.console_debug):
+		if (args.detachedStrip):
 			print leds
 		else:
 			# Send Packet
-			pass
+			for x in range(len(leds)):
+				strip.setPixelColor(x,int(leds[x], 16))
+			strip.show()
 
 		# Update the Values
 		baseHue += 1
-		if baseHue > 359:
+		if baseHue == 360:
 			baseHue = 0
-		phase += 0.5
-		if phase > 100:
+		phase += 0.1
+		if phase == 100:
 			phase = 0
 		frequency += 0.05
-		if frequency > 2:
-			frequency = 0.5
+		if frequency == 0.7:
+			frequency = 0.4
 
 		# Wait until next interval
 		time.sleep(args.interval)
