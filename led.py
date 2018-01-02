@@ -11,6 +11,7 @@ def parse_args(args):
 	parser = argparse.ArgumentParser(description="LED Strip Controller")
 	parser.add_argument("--numPixels", type=int, help="The number of LEDs in the strip")
 	parser.add_argument("--interval", type=float, help="The interval time in milliseconds between each packet")
+	parser.add_argument("--sparkles", action="store_true", help="Add intermittent white sparkles along the LED Strip")
 	parser.add_argument("--detachedStrip", action="store_true", help="Output packets to console, ignore LED")
 	return parser.parse_args(args)
 
@@ -29,6 +30,7 @@ def main_loop(args):
 	frequency = 0.05
 	phase = 0
 	baseHue = 0
+	sparkle = None
 
 	print "Beginning Main Loop"
 	while True:
@@ -40,6 +42,19 @@ def main_loop(args):
 			rgb = colorsys.hls_to_rgb(hue/360, 0.5, 1)
 			hex = '%02x%02x%02x' % (int(rgb[0]*255), int(rgb[1]*255), int(rgb[2]*255))
 			leds.append(hex)
+
+		# Overwrite with Sparkles, if defined
+		if args.sparkles:
+			if sparkle is None and random.randint(1,100) < 2:
+				# Small Chance to spawn a new Sparkle somewhere along the Strip
+				sparkle = ((random.randint(0,args.numPixels-2),0))
+			if sparkle is not None:
+				# Render Sparkle and push along the path
+				leds[sparkle[0]] = 'FFFFFF'
+				sparkle = (sparkle[0] + 2, sparkle[1] + 1)
+
+				if sparkle[1] > 10 or sparkle[0] > args.numPixels -2:
+					sparkle = None # Delete is lifetime is up, or path end is reached
 
 		# Update LED Colors
 		if (args.detachedStrip):
@@ -54,7 +69,7 @@ def main_loop(args):
 		baseHue += 0.2
 		if baseHue == 360:
 			baseHue = 0
-		phase += 0.1
+		phase += 0.01
 		if phase == 100:
 			phase = 0
 
