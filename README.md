@@ -1,3 +1,7 @@
+### Description
+
+Raspberry Pi project created for powering a magical light show driven by the movements of its wearer.
+
 ### Usage
 
 `python led.py --numPixels 72 --interval 0.02 --sparkles`
