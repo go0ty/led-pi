@@ -29,7 +29,7 @@ class ImuPoller:
 
         self.lastReadTime = datetime.datetime.now()
 
-    def update(self):
+    def getComplimentaryFilter(self):
         # Read the accelerometer,gyroscope and magnetometer values
         ACCx = IMU.readACCx()
         ACCy = IMU.readACCy()
@@ -107,4 +107,16 @@ class ImuPoller:
         if 0:           # showing the heading
             print ("HEADING  %5.2f \33[1;37;40m tiltCompensatedHeading %5.2f" % (heading,tiltCompensatedHeading))
 
-        return (self.CFangleX, self.CFangleY, tiltCompensatedHeading)
+        return (self.CFangleX, self.CFangleY)
+
+    def getSimpleHeading():
+        # Get only the Heading
+        MAGx = IMU.readMAGx()
+        MAGy = IMU.readMAGy()
+
+        # Calculate heading
+        heading = 180 * math.atan2(MAGy,MAGx)/M_PI
+
+        # Only have our heading between 0 and 360
+        if heading < 0:
+            heading += 360
