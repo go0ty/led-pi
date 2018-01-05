@@ -12,6 +12,10 @@ import time
 import colorsys
 import random
 from dotstar import Adafruit_DotStar
+from imuPoller import ImuPoller
+
+# Initialize IMU Polling
+imu = ImuPoller()
 
 def parse_args(args):
 	# Getting command line arguments
@@ -38,6 +42,9 @@ def main_loop(args):
 	phase = 0
 	baseHue = 0
 	sparkle = None
+
+	# Imu Values
+	lastHeading = None
 
 	print "Beginning Main Loop, Enjoy the Show"
 	while True:
@@ -72,10 +79,22 @@ def main_loop(args):
 				strip.setPixelColor(x,int(leds[x], 16))
 			strip.show()
 
-		# Update the Values
+		# Update the Base Hue color incrementally, and additionally based on IMU Reads
 		baseHue += 0.2
-		if baseHue == 360:
-			baseHue = 0
+
+		currentHeading = imu.getSimpleHeading()
+		if lastHeading is not None:
+			headingDelta = lastHeading - currentHeading
+			baseHue += headingDelta
+		lastHeading = currentHeading
+
+		# Ensure a valid Hue Range
+		if baseHue > 360:
+			baseHue -= 360
+		if baseHue < 0:
+			baseHue += 360
+
+		# Shift the phase of the wave
 		phase += 0.01
 		if phase == 100:
 			phase = 0

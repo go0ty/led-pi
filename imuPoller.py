@@ -103,13 +103,13 @@ class ImuPoller:
 
         if 0:           # showing the angles from the complementary filter
             print ("\033[1;35;40m   \tCFangleX Angle %5.2f \033[1;36;40m  CFangleY Angle %5.2f \33[1;32;40m" % (self.CFangleX,self.CFangleY)),
-            
+
         if 0:           # showing the heading
             print ("HEADING  %5.2f \33[1;37;40m tiltCompensatedHeading %5.2f" % (heading,tiltCompensatedHeading))
 
         return (self.CFangleX, self.CFangleY)
 
-    def getSimpleHeading():
+    def getSimpleHeading(self):
         # Get only the Heading
         MAGx = IMU.readMAGx()
         MAGy = IMU.readMAGy()
@@ -120,3 +120,6 @@ class ImuPoller:
         # Only have our heading between 0 and 360
         if heading < 0:
             heading += 360
+
+	return heading
+
