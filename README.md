@@ -1,6 +1,6 @@
 ### Description
 
-Raspberry Pi project created for powering a magical light show driven by the movements of its wearer.
+Raspberry Pi project created for powering a magical light show on an LED strip driven by the movements of its wearer.
 
 ### Usage
 
