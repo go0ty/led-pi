@@ -1,3 +1,10 @@
+#!/usr/bin/python
+#
+# Main LED loop that pushes pixels to the DotStar strip
+#
+# Credit to https://github.com/adafruit/Adafruit_DotStar_Pi
+#
+
 import sys
 import argparse
 import math
@@ -32,7 +39,7 @@ def main_loop(args):
 	baseHue = 0
 	sparkle = None
 
-	print "Beginning Main Loop"
+	print "Beginning Main Loop, Enjoy the Show"
 	while True:
 		# Loop through each LED and assign a color
 		leds = []
