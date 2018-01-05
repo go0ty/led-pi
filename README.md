@@ -6,6 +6,10 @@ Raspberry Pi project created for powering a magical light show on an LED strip d
 
 `python led.py --numPixels 72 --interval 0.02 --sparkles`
 
+or just
+
+`./runDefaults`
+
 ### Credit
 
 * _BerryIMU_ created by http://ozzmaker.com, code from https://github.com/mwilliams03/BerryIMU
