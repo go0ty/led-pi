@@ -62,14 +62,19 @@ def main_loop(args):
 		if args.sparkles:
 			if random.randint(1,100) < 2:
 				# Small Chance to spawn a new Sparkle somewhere along the Strip
-				sparkles.append((random.randint(0,args.numPixels-2),0))
+				sparkles.append((random.randint(0,args.numPixels-2),0,random.randint(1,3)))
+			if imu.getAccelZ() > 2000:
+				# If large movement is detected, add a flurry of sparkles
+				for x in range(5):
+					sparkles.append((random.randint(0,args.numPixels-2),3,random.randint(1,3)))
+
 			for x in range(len(sparkles)):
 				sparkle = sparkles[x]
 				# Render Sparkle and push along the path
 				leds[sparkle[0]] = 'FFFFFF'
-				sparkle = (sparkle[0] + 2, sparkle[1] + 1)
+				sparkle = (sparkle[0] + sparkle[2], sparkle[1] + 1, sparkle[2])
 				# Check for deletion
-				if sparkle[1] > 10 or sparkle[0] > args.numPixels -2:
+				if sparkle[1] > 10 or sparkle[0] > args.numPixels - 3:
 					sparkle = None # Mark for Delete is lifetime is up, or path end is reached
 				sparkles[x] = sparkle
 			# Remove all empty Sparkles

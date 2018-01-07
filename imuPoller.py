@@ -123,3 +123,8 @@ class ImuPoller:
 
 	return heading
 
+    def getAccelZ(self):
+	# Detect for jumps
+	ACCz = IMU.readACCz()
+
+	return ACCz
