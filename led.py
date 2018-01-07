@@ -21,27 +21,28 @@ def parse_args(args):
 	# Getting command line arguments
 	parser = argparse.ArgumentParser(description="LED Strip Controller")
 	parser.add_argument("--numPixels", type=int, help="The number of LEDs in the strip")
-	parser.add_argument("--interval", type=float, help="The interval time in milliseconds between each packet")
+	parser.add_argument("--interval", type=float, default=0.02, help="The interval time in milliseconds between each packet")
+	parser.add_argument("--brightness", type=int, default=32, help="The brightness of the Pixels.")
 	parser.add_argument("--sparkles", action="store_true", help="Add intermittent white sparkles along the LED Strip")
 	parser.add_argument("--detachedStrip", action="store_true", help="Output packets to console, ignore LED")
 	return parser.parse_args(args)
 
-def init_led(numPixels):
-	strip = Adafruit_DotStar(numPixels, 12000000)
+def init_led(args):
+	strip = Adafruit_DotStar(args.numPixels, 12000000)
 	strip.begin()
-	strip.setBrightness(32)
+	strip.setBrightness(args.brightness)
 	return strip
 
 def main_loop(args):
 	# DotStar Interface
 	if not args.detachedStrip:
-		strip = init_led(args.numPixels)
+		strip = init_led(args)
 
 	# Timing Parameters
 	frequency = 0.05
 	phase = 0
-	baseHue = 0
-	sparkle = None
+	baseHue = random.randint(1,359)
+	sparkles = []
 
 	# Imu Values
 	lastHeading = None
@@ -59,16 +60,20 @@ def main_loop(args):
 
 		# Overwrite with Sparkles, if defined
 		if args.sparkles:
-			if sparkle is None and random.randint(1,100) < 2:
+			if random.randint(1,100) < 2:
 				# Small Chance to spawn a new Sparkle somewhere along the Strip
-				sparkle = ((random.randint(0,args.numPixels-2),0))
-			if sparkle is not None:
+				sparkles.append((random.randint(0,args.numPixels-2),0))
+			for x in range(len(sparkles)):
+				sparkle = sparkles[x]
 				# Render Sparkle and push along the path
 				leds[sparkle[0]] = 'FFFFFF'
 				sparkle = (sparkle[0] + 2, sparkle[1] + 1)
-
+				# Check for deletion
 				if sparkle[1] > 10 or sparkle[0] > args.numPixels -2:
-					sparkle = None # Delete is lifetime is up, or path end is reached
+					sparkle = None # Mark for Delete is lifetime is up, or path end is reached
+				sparkles[x] = sparkle
+			# Remove all empty Sparkles
+			sparkles = filter(None, sparkles)
 
 		# Update LED Colors
 		if (args.detachedStrip):
@@ -90,9 +95,9 @@ def main_loop(args):
 
 		# Ensure a valid Hue Range
 		if baseHue > 360:
-			baseHue -= 360
+			baseHue -= 359
 		if baseHue < 0:
-			baseHue += 360
+			baseHue += 359
 
 		# Shift the phase of the wave
 		phase += 0.01
