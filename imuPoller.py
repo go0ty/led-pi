@@ -133,7 +133,7 @@ class ImuPoller:
 	self.gyroYangle+=rate_gyr_y*LP
 	return self.gyroYangle
 
-    def getAccelZ(self):
+    def getAccelY(self):
 	# Detect for jumps
-	ACCz = IMU.readACCz()
-	return ACCz
+	ACCy = IMU.readACCy()
+	return ACCy

@@ -63,7 +63,7 @@ def main_loop(args):
 			if random.randint(1,100) < 2:
 				# Small Chance to spawn a new Sparkle somewhere along the Strip
 				sparkles.append((random.randint(0,args.numPixels-2),random.randint(0,5),random.randint(1,3)))
-			if imu.getAccelZ() > 2000:
+			if imu.getAccelY() > 2500:
 				# If large movement is detected, add a flurry of sparkles
 				for x in range(5):
 					sparkles.append((random.randint(0,args.numPixels-2),random.randint(3,6),random.randint(1,3)))
