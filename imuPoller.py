@@ -22,7 +22,7 @@ class ImuPoller:
         self.gyroYangle = 0.0
         self.gyroZangle = 0.0
         self.CFangleX = 0.0
-        self.CFangleY = 0.0  
+        self.CFangleY = 0.0
 
         IMU.detectIMU()     # Detect if BerryIMUv1 or BerryIMUv2 is connected.
         IMU.initIMU()       # Initialise the accelerometer, gyroscope and compass
@@ -123,8 +123,17 @@ class ImuPoller:
 
 	return heading
 
+    def getGyroY(self):
+	GYRy = IMU.readGYRy()
+	# Calculate loop Period(LP). How long between Gyro Reads
+        readDelta = datetime.datetime.now() - self.lastReadTime
+        self.lastReadTime = datetime.datetime.now()
+        LP = readDelta.microseconds/(1000000*1.0)
+	rate_gyr_y = GYRy * G_GAIN
+	self.gyroYangle+=rate_gyr_y*LP
+	return self.gyroYangle
+
     def getAccelZ(self):
 	# Detect for jumps
 	ACCz = IMU.readACCz()
-
 	return ACCz

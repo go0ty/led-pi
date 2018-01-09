@@ -45,7 +45,7 @@ def main_loop(args):
 	sparkles = []
 
 	# Imu Values
-	lastHeading = None
+	lastGyro = None
 
 	print "Beginning Main Loop, Enjoy the Show"
 	while True:
@@ -62,11 +62,11 @@ def main_loop(args):
 		if args.sparkles:
 			if random.randint(1,100) < 2:
 				# Small Chance to spawn a new Sparkle somewhere along the Strip
-				sparkles.append((random.randint(0,args.numPixels-2),0,random.randint(1,3)))
+				sparkles.append((random.randint(0,args.numPixels-2),random.randint(0,5),random.randint(1,3)))
 			if imu.getAccelZ() > 2000:
 				# If large movement is detected, add a flurry of sparkles
 				for x in range(5):
-					sparkles.append((random.randint(0,args.numPixels-2),3,random.randint(1,3)))
+					sparkles.append((random.randint(0,args.numPixels-2),random.randint(3,6),random.randint(1,3)))
 
 			for x in range(len(sparkles)):
 				sparkle = sparkles[x]
@@ -74,7 +74,7 @@ def main_loop(args):
 				leds[sparkle[0]] = 'FFFFFF'
 				sparkle = (sparkle[0] + sparkle[2], sparkle[1] + 1, sparkle[2])
 				# Check for deletion
-				if sparkle[1] > 10 or sparkle[0] > args.numPixels - 3:
+				if sparkle[1] > 15 or sparkle[0] > args.numPixels - 3:
 					sparkle = None # Mark for Delete is lifetime is up, or path end is reached
 				sparkles[x] = sparkle
 			# Remove all empty Sparkles
@@ -92,11 +92,11 @@ def main_loop(args):
 		# Update the Base Hue color incrementally, and additionally based on IMU Reads
 		baseHue += 0.2
 
-		currentHeading = imu.getSimpleHeading()
-		if lastHeading is not None:
-			headingDelta = lastHeading - currentHeading
-			baseHue += headingDelta
-		lastHeading = currentHeading
+		currentGyro = imu.getGyroY()
+		if lastGyro is not None:
+			gyroDelta = lastGyro - currentGyro
+			baseHue += gyroDelta
+		lastGyro = currentGyro
 
 		# Ensure a valid Hue Range
 		if baseHue > 360:
